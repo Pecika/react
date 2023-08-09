@@ -30,7 +30,7 @@ function App() {
         <header>        
         </header>
 
-        <body>
+         
           <nav>
             <Navbar />
           </nav>
@@ -45,7 +45,7 @@ function App() {
             } />
             <Route path="/kreiraj-zadatak" element={<KreirajZadatak addTask={addTask} />} />
           </Routes>
-        </body>
+       
       </div>
     </Router>
   );

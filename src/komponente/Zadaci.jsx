@@ -2,18 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import JedanZadatak from './JedanZadatak';
 import FiltriranjeZadataka from './FiltriranjeZadataka';
-import HitnostZadatka from './HitnostZadatka'; // Dodajemo HitnostZadatka komponentu
 
 const Zadaci = ({ tasks }) => {
   const [taskList, setTaskList] = useState(tasks);
-
+  const [sortAscending, setSortAscending] = useState(true); 
   useEffect(() => {
     setTaskList(tasks);
   }, [tasks]);
 
   const initialValue = 'svi';
   const [filterOption, setFilterOption] = useState(initialValue);
-  const [sortOption, setSortOption] = useState('datum-najranije'); // Define the sortOption state
+ 
 
   const handleTaskToggle = (id) => {
     const updatedTasks = taskList.map((task) => {
@@ -48,16 +47,19 @@ const Zadaci = ({ tasks }) => {
     setFilterOption(filterOption);
   };
 
-  const handleSortChange = (sortOption) => { // Define the handleSortChange function
-    setSortOption(sortOption);
-    // Logic to sort the tasks based on the selected sort option
+ 
+  const handleSort = () => {
+    const sortedTasks = [...taskList].sort((a, b) => {
+      return sortAscending ? new Date(a.rok) - new Date(b.rok) : new Date(b.rok) - new Date(a.rok);
+    });
+    setTaskList(sortedTasks);
+    setSortAscending(!sortAscending);  
   };
 
   const filteredTasks = applyFilter();
 
 
-  useEffect(() => {
-    // Učitavanje podataka iz localStorage kada se komponenta montira
+  useEffect(() => { 
     const storedTasks = localStorage.getItem('tasks');
     if (storedTasks) {
       setTaskList(JSON.parse(storedTasks));
@@ -71,7 +73,7 @@ const Zadaci = ({ tasks }) => {
       </div>
       <div style={{ display: 'flex', gap: '1.5em', alignItems: 'center' }}>
         <FiltriranjeZadataka filterTasks={handleFilterChange} />
-        <HitnostZadatka filterTasks={handleSortChange} />
+        <button onClick={handleSort}>{sortAscending ? 'Sortiraj rastuće' : 'Sortiraj opadajuće'}</button> 
       </div>
       {filteredTasks.length === 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 'calc(100vh - 60px)' }}>
@@ -80,6 +82,7 @@ const Zadaci = ({ tasks }) => {
           </p>
         </div>
       ) : (
+        
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
           {filteredTasks.map((task) => (
             <JedanZadatak
